@@ -1,19 +1,18 @@
 import './home.dart';
 import './login.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
+import 'const.dart';
 
 // flutter build apk --release
 
 void main() {
-  final LocalStorage storage = LocalStorage('data');
   bool isLoggedIn = storage.getItem("login") ?? false;
   runApp(MaterialApp(
     title: "Charger Station",
     debugShowCheckedModeBanner: false,
     routes: {
-      "/": (context) => isLoggedIn ? HomePage() : LoginPage(),
-      "/home": (context) => HomePage(),
+      "/": (context) => isLoggedIn ? const HomePage() : LoginPage(),
+      "/home": (context) => const HomePage(),
       "/login": (context) => LoginPage(),
     },
   ));

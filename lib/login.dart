@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:localstorage/localstorage.dart';
+import 'const.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final LocalStorage storage = LocalStorage('data');
 
   void showToast(String message) {
     Fluttertoast.showToast(msg: message, toastLength: Toast.LENGTH_SHORT);
@@ -20,17 +19,17 @@ class LoginPage extends StatelessWidget {
       return;
     }
     String param = "action=login&user_type=user&email=$mail&password=$pass";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) {
+    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) async {
       print(resp.body);
       if (resp.body.contains("failed")) {
         showToast("Email or password not found!");
         return;
       }
       var userId = resp.body.replaceAll("Login successful. User ID: ", "");
-      storage.setItem("login", true);
-      storage.setItem("email", mail);
-      storage.setItem("pass", pass);
-      storage.setItem("user_id", userId);
+      await storage.setItem("login", true);
+      await storage.setItem("email", mail);
+      await storage.setItem("pass", pass);
+      await storage.setItem("user_id", userId);
       print("$mail, $pass, $userId");
       Navigator.of(context).pushReplacementNamed("/home");
     });
