@@ -154,7 +154,6 @@ class _HomePageState extends State<HomePage> {
             if (result.rawContent.contains("C")) {
               int sid = int.parse(result.rawContent[1]);
               int cid = int.parse(result.rawContent[3]);
-              Navigator.of(context).pop();
               Navigator.of(context).push(MaterialPageRoute(builder: (context) => QueueScreen(sid: sid, cid: cid)));
             }
             print(result.rawContent);

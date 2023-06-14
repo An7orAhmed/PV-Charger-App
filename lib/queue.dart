@@ -116,6 +116,7 @@ class _QueueScreenState extends State<QueueScreen> {
   }
 
   Widget queueCard() {
+    if (rate == 0) return const SizedBox.shrink();
     return SizedBox(
       width: double.maxFinite,
       height: 130,
@@ -155,6 +156,7 @@ class _QueueScreenState extends State<QueueScreen> {
   }
 
   Widget queueCardByTime() {
+    if (rate == 0) return const SizedBox.shrink();
     minBill = rate * minUnit + (isFast ? minUnit * 2 : 0);
     return SizedBox(
       width: double.maxFinite,
