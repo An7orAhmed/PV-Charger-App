@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
-        android:label="pv_charging_app"
+        android:label="PV Charger"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

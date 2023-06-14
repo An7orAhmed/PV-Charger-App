@@ -43,6 +43,8 @@ class LoginPage extends StatelessWidget {
           width: 300,
           height: 320,
           child: Card(
+            elevation: 35,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -50,11 +52,12 @@ class LoginPage extends StatelessWidget {
                 children: [
                   const Text(
                     "PV Charger Customer",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
                   ),
+                  const SizedBox(height: 10),
                   const Text(
                     "Login",
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w200),
                   ),
                   TextField(
                     controller: _emailController,
