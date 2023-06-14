@@ -48,6 +48,8 @@ class _QueueScreenState extends State<QueueScreen> {
     String mail = storage.getItem("email");
     String param = "action=deduct&email=$mail&amount=$bill";
     await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
+    param = "action=info&msg=Payment Successful. Thanks you.";
+    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
   }
 
   Future<void> checkRate() async {
