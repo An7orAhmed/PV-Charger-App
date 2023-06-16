@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'const.dart';
 
 // flutter build apk --release
-
 void main() {
   bool isLoggedIn = storage.getItem("login") ?? false;
   runApp(MaterialApp(

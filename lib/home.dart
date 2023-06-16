@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:pv_charging_app/queue.dart';
 import 'const.dart';
+import 'log.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int balance = 0;
+  List<Log> logs = [];
 
   @override
   void initState() {
@@ -51,10 +55,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> userLog() async {
+    String uid = storage.getItem("user_id");
+    String param = "action=customerQueue&user_id=$uid";
+    var resp = await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
+    List<dynamic> json = jsonDecode(resp.body);
+    logs.clear();
+    logs.addAll(json.map((e) => Log.fromMap(e)).toList());
+  }
+
   Widget button(String title, Icon icon, action) {
     return SizedBox(
       width: double.maxFinite,
-      height: 120,
+      height: 100,
       child: Card(
         elevation: 5,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -97,7 +110,6 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           button(
             "My Balance: $balance BDT",
@@ -158,6 +170,50 @@ class _HomePageState extends State<HomePage> {
             }
             print(result.rawContent);
           }),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 15),
+            child: Text(
+              "Charge History:",
+              style: TextStyle(fontSize: 25),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: userLog(),
+              builder: (context, data) {
+                if (data.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (logs.isEmpty) {
+                  return const Center(child: Text("No previous log found!"));
+                }
+
+                return ListView(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  children: logs
+                      .map(
+                        (log) => Card(
+                          elevation: 5,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: ListTile(
+                            title: Text(log.start_time),
+                            subtitle: Text("STA: ${log.station_id} | CHA: ${log.charger_id} | ${log.charging_mode}"),
+                            trailing: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text("${log.charge_bill}TK"),
+                                Text(log.charge_time == "-1" ? "F.CHA" : "${log.charge_time} min"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
