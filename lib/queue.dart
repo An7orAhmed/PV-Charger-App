@@ -31,7 +31,7 @@ class _QueueScreenState extends State<QueueScreen> {
   Future<void> checkBalance() async {
     String mail = storage.getItem("email");
     String param = "action=balance&email=$mail";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) async {
+    await http.get(Uri.parse("${host}api.php?$param")).then((resp) async {
       print(resp.body);
       if (resp.body.contains("Error")) {
         return;
@@ -47,14 +47,14 @@ class _QueueScreenState extends State<QueueScreen> {
   Future<void> updateBalance(int bill) async {
     String mail = storage.getItem("email");
     String param = "action=deduct&email=$mail&amount=$bill";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
+    await http.get(Uri.parse("${host}api.php?$param"));
     param = "action=info&msg=Payment Successful. Thanks you.";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
+    await http.get(Uri.parse("${host}api.php?$param"));
   }
 
   Future<void> checkRate() async {
     String param = "action=rate&station_id=${widget.sid}&charger_id=${widget.cid}";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) async {
+    await http.get(Uri.parse("${host}api.php?$param")).then((resp) async {
       print(resp.body);
       if (resp.body.contains("Rate")) {
         String value = resp.body.replaceAll("Rate: ", "");
@@ -74,7 +74,7 @@ class _QueueScreenState extends State<QueueScreen> {
     String userId = storage.getItem("user_id");
     String param =
         "action=queue&user_id=$userId&station_id=${widget.sid}&charger_id=${widget.cid}&charge_bill=$bill&charge_time=$time&charging_mode=${isFast ? "fast" : "buck"}";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) async {
+    await http.get(Uri.parse("${host}api.php?$param")).then((resp) async {
       print(resp.body);
       if (resp.body.contains("successfully")) {
         updateBalance(bill);

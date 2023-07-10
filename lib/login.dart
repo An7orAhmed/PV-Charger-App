@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
       return;
     }
     String param = "action=login&user_type=user&email=$mail&password=$pass";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) async {
+    await http.get(Uri.parse("${host}api.php?$param")).then((resp) async {
       print(resp.body);
       if (resp.body.contains("failed")) {
         showToast("Email or password not found!");

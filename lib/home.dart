@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,13 +25,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message, textAlign: TextAlign.center)));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message, textAlign: TextAlign.center)));
   }
 
   Future<void> checkBalance() async {
     String mail = storage.getItem("email");
     String param = "action=balance&email=$mail";
-    await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param")).then((resp) async {
+    await http
+        .get(Uri.parse(
+            "${host}api.php?$param"))
+        .then((resp) async {
       print(resp.body);
       if (resp.body.contains("Error")) {
         return;
@@ -47,7 +50,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<bool> isChargerFree(int sid, int cid) async {
     String param = "action=chargerState&station_id=$sid&charger_id=$cid";
-    var resp = await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
+    var resp = await http.get(Uri.parse(
+        "${host}api.php?$param"));
     if (resp.body.contains("off")) {
       return true;
     } else {
@@ -58,7 +62,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> userLog() async {
     String uid = storage.getItem("user_id");
     String param = "action=customerQueue&user_id=$uid";
-    var resp = await http.get(Uri.parse("https://esinebd.com/projects/chargerStation/api.php?$param"));
+    var resp = await http.get(Uri.parse(
+        "${host}api.php?$param"));
     List<dynamic> json = jsonDecode(resp.body);
     logs.clear();
     logs.addAll(json.map((e) => Log.fromMap(e)).toList());
@@ -71,7 +76,8 @@ class _HomePageState extends State<HomePage> {
       child: Card(
         elevation: 5,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15))),
         child: InkWell(
           onTap: action,
           borderRadius: const BorderRadius.all(Radius.circular(15)),
@@ -84,7 +90,8 @@ class _HomePageState extends State<HomePage> {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w200),
+                style:
+                    const TextStyle(fontSize: 25, fontWeight: FontWeight.w200),
               ),
             ],
           ),
@@ -113,10 +120,13 @@ class _HomePageState extends State<HomePage> {
         children: [
           button(
             "My Balance: $balance BDT",
-            const Icon(Icons.monetization_on, color: Colors.greenAccent, size: 60),
+            const Icon(Icons.monetization_on,
+                color: Colors.greenAccent, size: 60),
             () => checkBalance(),
           ),
-          button("Manual", const Icon(Icons.input, color: Colors.purpleAccent, size: 60), () {
+          button("Manual",
+              const Icon(Icons.input, color: Colors.purpleAccent, size: 60),
+              () {
             showDialog(
                 context: context,
                 builder: (context) {
@@ -130,28 +140,34 @@ class _HomePageState extends State<HomePage> {
                           TextField(
                             controller: sid,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: "Station ID"),
+                            decoration:
+                                const InputDecoration(labelText: "Station ID"),
                           ),
                           TextField(
                             controller: cid,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: "Charger ID"),
+                            decoration:
+                                const InputDecoration(labelText: "Charger ID"),
                           ),
                           const SizedBox(height: 14),
                           FilledButton(
                               onPressed: () async {
                                 int sidi = int.parse(sid.text);
                                 int cidi = int.parse(cid.text);
-                                bool chargerAvailable = await isChargerFree(sidi, cidi);
+                                bool chargerAvailable =
+                                    await isChargerFree(sidi, cidi);
                                 if (!chargerAvailable) {
                                   Navigator.pop(context);
-                                  SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                  SystemChannels.textInput
+                                      .invokeMethod('TextInput.hide');
                                   showToast("This charger is busy right now!");
                                   return;
                                 }
                                 Navigator.of(context).pop();
                                 Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => QueueScreen(sid: sidi, cid: cidi)),
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          QueueScreen(sid: sidi, cid: cidi)),
                                 );
                               },
                               child: const Text("Next")),
@@ -161,12 +177,16 @@ class _HomePageState extends State<HomePage> {
                   );
                 });
           }),
-          button("Scan QR", const Icon(Icons.camera_alt, color: Colors.deepOrangeAccent, size: 60), () async {
+          button(
+              "Scan QR",
+              const Icon(Icons.camera_alt,
+                  color: Colors.deepOrangeAccent, size: 60), () async {
             var result = await BarcodeScanner.scan();
             if (result.rawContent.contains("C")) {
               int sid = int.parse(result.rawContent[1]);
               int cid = int.parse(result.rawContent[3]);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => QueueScreen(sid: sid, cid: cid)));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => QueueScreen(sid: sid, cid: cid)));
             }
             print(result.rawContent);
           }),
@@ -198,12 +218,15 @@ class _HomePageState extends State<HomePage> {
                           margin: const EdgeInsets.only(bottom: 10),
                           child: ListTile(
                             title: Text(log.start_time),
-                            subtitle: Text("STA: ${log.station_id} | CHA: ${log.charger_id} | ${log.charging_mode}"),
+                            subtitle: Text(
+                                "STA: ${log.station_id} | CHA: ${log.charger_id} | ${log.charging_mode}"),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text("${log.charge_bill}TK"),
-                                Text(log.charge_time == "-1" ? "F.CHA" : "${log.charge_time} min"),
+                                Text(log.charge_time == "-1"
+                                    ? "F.CHA"
+                                    : "${log.charge_time} min"),
                               ],
                             ),
                           ),
